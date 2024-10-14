@@ -6,7 +6,7 @@ export default async function App() {
 	const session = await auth()
 
 	if (!session || !session.user) {
-		redirect('https://tg-api-lilac.vercel.app/signin')
+		redirect('https://tg-api-kappa.vercel.app/signin')
 	}
 
 	return (
