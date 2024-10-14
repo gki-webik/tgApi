@@ -27,6 +27,7 @@ RewriteRule . /index.html [L]
     ExpiresDefault "access plus 2 days"
 </IfModule>
 
+
 # Защита от доступа к скрытым файлам
 <FilesMatch "^\.">
     Require all denied
