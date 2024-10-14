@@ -45,8 +45,8 @@ export async function GET(req: NextRequest) {
 			message: 'Авторизация через Telegram успешна',
 			user
 		})
-	} catch (error) {
-		console.error('Ошибка при обработке запроса: ', error)
+	} catch (error:any) {
+		console.error('Ошибка при обработке запроса: ', error.message, error.stack)
 		return NextResponse.json(
 			{ message: 'Произошла ошибка при аутентификации через Telegram', error },
 			{ status: 500 }
