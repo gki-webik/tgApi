@@ -1,7 +1,6 @@
 'use client'
 
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -29,18 +28,20 @@ export default function LoginForm() {
 
 	const onSubmit = async (values: any) => {
 		const response = await signIn('credentials', {
-			redirect: false,
+			redirect: false, // Убедимся, что перенаправление контролируется вручную
 			email: values.email,
 			password: values.password
 		})
 
+		// Проверка успешности логина
 		if (response?.error) {
 			toast.error('Неправильный email или пароль')
 			return
 		}
 
+		// Если авторизация успешна, выводим сообщение и выполняем перенаправление
 		toast.success('Вы вошли в систему')
-		router.push('/')
+		router.push('/') // Перенаправляем на главную страницу
 	}
 
 	return (

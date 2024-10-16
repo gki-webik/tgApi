@@ -15,6 +15,8 @@ import {
 import { toast } from 'sonner'
 import { registerSchema } from '@/lib/schemas'
 import Link from 'next/link'
+import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
 export default function RegisterForm() {
 	const form = useForm({
@@ -26,6 +28,7 @@ export default function RegisterForm() {
 			confirmPassword: ''
 		}
 	})
+	const router = useRouter()
 
 	const onSubmit = async (values: any) => {
 		if (Object.keys(form.formState.errors).length > 0) {
@@ -47,6 +50,20 @@ export default function RegisterForm() {
 			toast.error(data.message)
 		} else {
 			toast.success('Вы успешно зарегистрировались')
+
+			// После успешной регистрации войти в систему автоматически
+			const signInResponse = await signIn('credentials', {
+				redirect: false,
+				email: values.email,
+				password: values.password
+			})
+
+			// Если вход успешен, перенаправить пользователя на главную страницу
+			if (signInResponse?.ok) {
+				router.push('/')
+			} else {
+				toast.error('Ошибка при входе после регистрации')
+			}
 		}
 	}
 

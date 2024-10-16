@@ -29,24 +29,45 @@ export async function GET(req: NextRequest) {
 		let user = await User.findOne({ telegramId: queryParams.id })
 		console.log('Результат поиска пользователя: ', user)
 
+		const isEmail = Math.floor(Math.random() * 10000) + '@gmail.com';
+
 		if (!user) {
 			console.log('Пользователь не найден, создаю нового пользователя.')
 			user = new User({
 				name: queryParams.first_name,
 				telegramId: queryParams.id,
-				provider: 'telegram'
+				provider: 'telegram',
+				email: isEmail,
 			})
 			await user.save()
 			console.log('Пользователь создан: ', user)
 		}
 
 		console.log('Возвращаю успешный ответ')
-		return NextResponse.json({
-			message: 'Авторизация через Telegram успешна',
-			user
-		})
-	} catch (error:any) {
-		console.error('Ошибка при обработке запроса: ', error.message, error.stack)
+		const searchParams = new URLSearchParams({
+			name: user.name || '',
+			telegramId: user.telegramId || '',
+			provider: user.provider || '',
+	        email: isEmail || ''
+		}).toString();
+
+		const redirectUrl = `${url.origin}/?${searchParams}`;
+		console.log('Redirect URL: ', redirectUrl);
+
+		// Проверка корректности URL
+		try {
+			new URL(redirectUrl, url.origin);
+		} catch (e) {
+			console.error('Некорректный URL для редиректа: ', redirectUrl);
+			return NextResponse.json(
+				{ message: 'Некорректный URL для редиректа', redirectUrl },
+				{ status: 500 }
+			);
+		}
+
+		return NextResponse.redirect(redirectUrl);
+	} catch (error) {
+		console.error('Ошибка при обработке запроса: ', error)
 		return NextResponse.json(
 			{ message: 'Произошла ошибка при аутентификации через Telegram', error },
 			{ status: 500 }

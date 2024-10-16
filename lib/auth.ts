@@ -67,13 +67,15 @@ export const authOptions = {
 						provider: 'google'
 					})
 
-					token.id = newUser._id.toString() // Преобразуем ObjectId в строку
+					token.id = newUser._id.toString()
 					token.email = newUser.email
 					token.name = newUser.name
+					token.provider = 'google'
 				} else if (existingUser) {
-					token.id = existingUser._id.toString() // Преобразуем ObjectId в строку
+					token.id = existingUser._id.toString()
 					token.email = existingUser.email
 					token.name = existingUser.name
+					token.provider = 'google'
 				}
 			}
 
@@ -84,6 +86,7 @@ export const authOptions = {
 				}
 				token.email = user.email
 				token.name = user.name
+				token.provider = account?.provider || 'credentials'
 			}
 
 			return token
@@ -92,18 +95,18 @@ export const authOptions = {
 		async session({ session, token }: { session: any; token: JWT }) {
 			console.log('Session Callback: ', session, token)
 
-			session.user.id = token.id // Добавляем id пользователя в сессию
+			session.user.id = token.id
 			session.user.email = token.email
 			session.user.name = token.name
+			session.user.provider = token.provider
 
-			return session // Возвращаем измененную сессию
+			return session
 		}
 	},
 	jwt: {
-		secret: process.env.AUTH_SECRET, // Убедитесь, что secret присутствует
-		maxAge: 30 * 24 * 60 * 60 // JWT срок действия - 30 дней
+		secret: process.env.AUTH_SECRET,
+		maxAge: 30 * 24 * 60 * 60
 	}
 }
 
-// Экспортируем функции
 export const { handlers, auth, signIn, signOut } = NextAuth(authOptions)
